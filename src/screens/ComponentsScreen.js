@@ -11,10 +11,14 @@ export default function App() {
   const [data, setData] = useState(null);
   const [dataModel, setDataModel] = useState(null);
   const [type, setType] = useState(null);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpen0, setModalOpen0] = useState(false);
+  const [modalOpen1, setModalOpen1] = useState(false);
+  const [modalOpen2, setModalOpen2] = useState(false);
 
   const [msg, setMsg] = useState(null);
+  const [isMsg, setMsgBarcode] = useState(null);
   const [isModel, setModel] = useState(null);
   const [isId, setId] = useState(null);
 
@@ -39,8 +43,9 @@ export default function App() {
         'x-api-key': "hjm3SE9rhH6I8VB9jx3Roz6uP9r6tghn" }
     })
     .then(({data}) => {
-      setDataModel({data});
-      console.log(dataModel);
+      console.log({data});
+      setDataModel(data);
+      console.log(Array.isArray(dataModel));
     })
 
     
@@ -64,15 +69,7 @@ export default function App() {
     });
 };
 
-renderItem = ({item, index}) => 
-<View style={styles.textStyle}>
-  <View>
-   <Text style={styles.textStyle}>
-     {item.description}
-   </Text>
-   <Text style={styles.textStyle}>{item.idModel}</Text>
- </View>
-</View>
+
 
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
@@ -87,6 +84,26 @@ renderItem = ({item, index}) =>
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalOpen1}
+        onRequestClose={() => {
+          setModalOpen(false);
+          setModalOpen1(false);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={styles.button}>
+              <Text style={styles.modalText}>{isMsg}</Text>
+              </View>
+          </View>
+        </View>
+      </Modal>
+
+
+      
       <Modal
         animationType="slide"
         transparent={true}
@@ -137,18 +154,67 @@ renderItem = ({item, index}) =>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
           <FlatList
-      data={dataModel}
-      keyExtractor={item => item.idModel.toString()}
-      renderItem={({ item }) => {
-        return (
-          <Card>
-            <Text style={styles.textStyle}>
-              Produit: {item.description} - BarCode: {item.barCode}
-            </Text>
-          </Card>
-        );
-      }}
-    />
+          initialNumToRender={10}
+          windowSize={5}
+          maxToRenderPerBatch={5}
+          updateCellsBatchingPeriod={30}
+          removeClippedSubviews={false}
+          data={dataModel}
+          onEndReachedThreshold={0.1}
+          renderItem={({item}) => {
+            return (
+              <Pressable 
+                onPress={() => {
+                  axios({
+                    method: 'put',
+                    url: 'http://192.168.1.17:5000/model/updateBarcode',
+                    headers: {
+                      'content-type': "application/json",
+                      'x-api-key': "hjm3SE9rhH6I8VB9jx3Roz6uP9r6tghn" },
+                    data: {
+                      barCode: `${data}`,
+                      idModel: `${item.idModel}`,
+                    }
+                  })
+                  .then(({data}) => {
+                    console.log(data.msg);
+                    setMsgBarcode(`${data.msg}`);
+                    setModalOpen1(true);
+                    setModalOpen0(false);
+                    setModalOpen(false);
+                  });
+                  console.log(item.barCode)
+                }}
+              >
+                <Card>
+                  <Text>
+                  Produit: {item.description} - BarCode: {item.barCode}
+                  </Text>
+                </Card>
+              </Pressable>
+            );
+          }}
+          keyExtractor={(item) => item.idModel}
+        />
+          </View>
+        </View>
+      </Modal>
+
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalOpen1}
+        onRequestClose={() => {
+          setModalOpen(false);
+          setModalOpen1(false);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={styles.button}>
+              <Text style={styles.modalText}>{isMsg}</Text>
+              </View>
           </View>
         </View>
       </Modal>

@@ -1,25 +1,34 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, FlatList } from 'react-native';
 import axios from 'axios';
 import Card from '../shared/card';
 
-const ListScreen = () => {
+const ListScreen = ({ navigation }) => {
 
   const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const Adress = navigation.getParam('Adress');
+    const Port = navigation.getParam('Port');
+
+    console.log(Adress);
+    console.log(Port);
+    axios({
+      method: 'get',
+      url: `http://${Adress}:${Port}/products`,
+      headers: { 'content-type': "application/json",
+                 'x-api-key': "hjm3SE9rhH6I8VB9jx3Roz6uP9r6tghn" } })
+                 .then(({data}) => {
+                  setData(data);
+                });
+  }, []);
   
-  axios({
-    method: 'get',
-    url: 'http://192.168.1.17:5000/products',
-    headers: { 'content-type': "application/json",
-               'x-api-key': "hjm3SE9rhH6I8VB9jx3Roz6uP9r6tghn" } })
-               .then(({data}) => {
-                setData(data);
-              });
+  
 
   return (
     <FlatList
-      data={this.state.data}
-      keyExtractor={item => item.idProduct.toString()}
+      data={data}
+      keyExtractor={item => item.idProduct}
       renderItem={({ item }) => {
         return (
           <Card>

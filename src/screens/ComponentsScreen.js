@@ -1,11 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Text, Alert, View, StyleSheet, Button,Pressable, Modal, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  Button,
+  Pressable,
+  Modal,
+  SafeAreaView,
+  Platform,
+  ScrollView,
+  Dimensions,
+  ImageBackground,
+  TextInput,
+  Keyboard,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import axios from 'axios';
 import _ from "lodash"
 import Card from '../shared/card';
 
-export default function App() {
+export default function App({navigation}) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [data, setData] = useState(null);
@@ -22,6 +41,11 @@ export default function App() {
   const [isModel, setModel] = useState(null);
   const [isId, setId] = useState(null);
 
+  const Adress = navigation.getParam('Adress');
+  const Port = navigation.getParam('Port');
+
+  console.log(Adress);
+  console.log(Port);
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -37,7 +61,7 @@ export default function App() {
 
     axios({
       method: 'get',
-      url: 'http://192.168.1.17:5000/models',
+      url: `http://${Adress}:${Port}/models`,
       headers: {
         'content-type': "application/json",
         'x-api-key': "hjm3SE9rhH6I8VB9jx3Roz6uP9r6tghn" }
@@ -52,7 +76,7 @@ export default function App() {
 
     axios({
       method: 'post',
-      url: 'http://192.168.1.17:5000/model/validateBarcode',
+      url: `http://${Adress}:${Port}/model/validateBarcode`,
       headers: {
         'content-type': "application/json",
         'x-api-key': "hjm3SE9rhH6I8VB9jx3Roz6uP9r6tghn" },
@@ -84,24 +108,6 @@ export default function App() {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalOpen1}
-        onRequestClose={() => {
-          setModalOpen(false);
-          setModalOpen1(false);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.button}>
-              <Text style={styles.modalText}>{isMsg}</Text>
-              </View>
-          </View>
-        </View>
-      </Modal>
-
 
       
       <Modal
@@ -167,7 +173,7 @@ export default function App() {
                 onPress={() => {
                   axios({
                     method: 'put',
-                    url: 'http://192.168.1.17:5000/model/updateBarcode',
+                    url: `http://${Adress}:${Port}/model/updateBarcode`,
                     headers: {
                       'content-type': "application/json",
                       'x-api-key': "hjm3SE9rhH6I8VB9jx3Roz6uP9r6tghn" },
@@ -268,6 +274,11 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  textStyleInput: {
+    color: "grey",
     fontWeight: "bold",
     textAlign: "center"
   },

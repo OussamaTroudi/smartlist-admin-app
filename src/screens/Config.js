@@ -5,7 +5,7 @@ const Config = ({navigation}) => {
     const [Adress, setAdress] = useState(null);
     const [Port, setPort] = useState(null);
     return (
-        <View justifyContent='center'>
+        <View style={styles.viewModal}>
             <TextInput
                 style={styles.text}
                 onChangeText={text => setAdress(text)}
@@ -35,6 +35,10 @@ const Config = ({navigation}) => {
 const styles = StyleSheet.create({
   text: {
     fontSize: 30
+  },
+  viewModal: {
+    flex: 1,
+    justifyContent: 'center'
   },
   button: {
     padding: 10,

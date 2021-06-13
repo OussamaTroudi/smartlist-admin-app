@@ -8,6 +8,7 @@ const HomeScreen = ({navigation}) => {
   console.log(Adress);
   console.log(Port);
   return (
+<<<<<<< HEAD
     <View style={styles.text}>
       <Button style={styles.button} title="BarCode Scanner" onPress={() => navigation.navigate('Components', {Adress, Port})}>
       </Button>
@@ -16,6 +17,18 @@ const HomeScreen = ({navigation}) => {
         navigation.navigate('List', {Adress, Port})
       }}>
       </Button>
+=======
+    <View>
+      <Text style={styles.text}>Admin App</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Components', {Adress, Port})}>
+        <Text>BarCode Scanner</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => {
+        navigation.navigate('List', {Adress, Port})
+      }}>
+        <Text>Consult Database</Text>
+      </TouchableOpacity>
+>>>>>>> dev0
     </View>
   );
 };
